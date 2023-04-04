@@ -11,6 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Countryquiz"
         tools:targetApi="31">
+        <activity android:name=".QuizQuestions" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
