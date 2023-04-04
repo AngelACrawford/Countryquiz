@@ -5,7 +5,7 @@ public class CountryContinentNeighborTable {
     private String countryName;
     private String question;
     private String continent;
-    private String neighbours;
+    private String neighbours; //dont need neighbors ?
 
     /* default constructor */
 
