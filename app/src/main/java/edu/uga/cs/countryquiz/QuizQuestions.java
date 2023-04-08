@@ -1,149 +1,99 @@
 package edu.uga.cs.countryquiz;
 
+import static org.apache.commons.lang3.ArrayUtils.contains;
+
 import android.app.Activity;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class QuizQuestions extends AppCompatActivity {
-    Country [] countries ; //gets data from onCreate
-    ArrayList<String> countriesAlreadyUsed = new ArrayList<String>(); // This keeps track of which countries have already been used so that there is no repeats in the quiz.
-    IndividualQuizQuestion question1 ;
-    IndividualQuizQuestion question2 ;
-    IndividualQuizQuestion question3 ;
-    IndividualQuizQuestion question4 ;
-    IndividualQuizQuestion question5 ;
-    IndividualQuizQuestion question6 ;
-    final String TAG = "Creating Questions" ;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
+public class QuizQuestions extends AppCompatActivity {
+
+    static int[] scores = {0,0,0,0,0,0};
+
+    public static int[] getScore() {
+        return scores;
+    }
+
+    public static void setScore( int position, int score ) {
+        scores[position] = score;
+        return;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.test_file); //Just using this to test. I think you know the correct layout ?
+        setContentView(R.layout.activity_quiz_quest); //Just using this to test. I think you know the correct layout ?
 
-        // Retrieve the countries array from the Intent extras
-        this.countries = (Country[]) getIntent().getSerializableExtra("countries");
-        question1 = new IndividualQuizQuestion() ;
-        countriesAlreadyUsed.add(question1.getCountryName()) ;
+        CountriesData countriesData = CountriesData.getInstance(this);
+        SQLiteDatabase db = countriesData.getReadableDatabase();
 
-        question2 = this.createUniqueQuestion();
-        countriesAlreadyUsed.add(question2.getCountryName()) ;
+        Country[] allCountries = countriesData.getCountries(db);
+        Country[] quizCountries = new Country[6];
+        String[] allContinents = countriesData.getContinents(db);
+        Random random = new Random();
+        int[] selectedIndices = new int[6];
+        int numSelected = 0;
 
-        question3 = this.createUniqueQuestion() ;
-        countriesAlreadyUsed.add(question3.getCountryName()) ;
+        // We want to use a while loop instead of a for loop so that if the index is already in the
+        // Array it tries again instead of skipping that index
+        while (numSelected < 6) {
+            int randomIndex = random.nextInt(allCountries.length);
+            if (!contains(selectedIndices, randomIndex)) {
+                quizCountries[numSelected] = allCountries[randomIndex];
+                selectedIndices[numSelected] = randomIndex;
+                numSelected++;
+            } // if
+        } // while
 
-        question4 = this.createUniqueQuestion() ;
-        countriesAlreadyUsed.add(question4.getCountryName()) ;
+        //Finds and sets views
+        ViewPager2 pager = findViewById( R.id.pager );
+        Button submitButton = findViewById( R.id.submitButton);
 
-        question5 = this.createUniqueQuestion() ;
-        countriesAlreadyUsed.add(question5.getCountryName()) ;
-
-        question6 = this.createUniqueQuestion() ;
-        countriesAlreadyUsed.add(question6.getCountryName()) ;
-
-        Log.d(TAG, "QUESTION LIST = " + countriesAlreadyUsed.toString()) ;
-
-
-
-    }
-
-    public IndividualQuizQuestion createUniqueQuestion() {
-        boolean unique = false;
-        IndividualQuizQuestion q = new IndividualQuizQuestion();
-        while (unique ==false ) {
-            if (countriesAlreadyUsed.contains(q)) {
-                q = new IndividualQuizQuestion() ; //Recreate the question as it has already been used.
-            }
-            else {
-                unique = true;
-                return q;
-            }
-        }
-        return q;
-    }
-
-    //This method is just for sending the Array of countries received from the intent to the IndiviudalQuizQuestion class.
-    public  Country[] getCountries() {
-        return this.countries;
-    }
-
-    public class IndividualQuizQuestion{
-
-        String countryName ;
-        String correctAnswer ;
-        String falseAnswer1 ;
-        String falseAnswer2 ;
-        Country[] countries = QuizQuestions.this.getCountries();
-        String[] listOfContinents = {"Africa", "Antarctica", "Asia", "Australia", "Europe", "North America", "South America"};
-
-        final String TAG = "Creating Questions" ;
-
-        public IndividualQuizQuestion() {
-            this.createQuestion();
-        }
-
-        public String getCountryName(){
-            return this.countryName ;
-        }
-
-        public String getCorrectAnswer(){
-            return this.correctAnswer;
-        }
-
-        public String getFalseAnswer1(){
-            return this.falseAnswer1;
-        }
-
-        public String getFalseAnswer2(){
-            return this.falseAnswer2;
-        }
-        public void createQuestion(){
-            Random rand = new Random() ;
-            int randomNumber = rand.nextInt(195) ; //Generates random int from 0 - 194
-            Country countryAnswer = countries[randomNumber] ;  // Finds a random country
-            this.countryName = countryAnswer.getCountry() ;
-            this.correctAnswer = countryAnswer.getContinent() ;
-
-            boolean falseAnswer1Generated = false ;
-            while (falseAnswer1Generated == false ) {
-                int randomNumber2 = rand.nextInt(7); //Generates random int from 0 - 6
-                String potentialFalseAnswer1 = listOfContinents[randomNumber2];
-
-                if(!potentialFalseAnswer1.equals(this.correctAnswer)) {
-                     this.falseAnswer1 = potentialFalseAnswer1 ; // Assign falseanswer1
-                    falseAnswer1Generated = true; //Turn loop off, as false answer 1 is unique ...
-                }
-
-            }
-
-            boolean falseAnswer2Generated = false ;
-            while (falseAnswer2Generated == false ) {
-                int randomNumber2 = rand.nextInt(7); //Generates random int from 0 - 6
-                String potentialFalseAnswer2 = listOfContinents[randomNumber2];
-                if(!potentialFalseAnswer2.equals(this.correctAnswer) && !potentialFalseAnswer2.equals(falseAnswer1)) {
-                    this.falseAnswer2 = potentialFalseAnswer2 ; // Assign falseanswer1
-                    falseAnswer2Generated = true; //Turn loop off, as false answer 1 is unique ...
-                }
-            }
-
-        }
-
-        public void printQuestionInfo() {
-        Log.d(TAG,"== Question Info == " ) ;
-        Log.d(TAG, "Country Name = " + this.countryName + " | Correct Answer = " + this.correctAnswer) ;
-        Log.d(TAG, "False Answer 1 = " + falseAnswer1 + "|  False Answer 2 = " + falseAnswer2 ) ;
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Handle the click event for the "Submit Quiz" button
+                Intent intent = new Intent(QuizQuestions.this, ScorePage.class);
+                startActivity(intent);
+            } // onClick
+        });
 
 
-        }
+
+        QuestionPagerAdapter questionAdapter = new QuestionPagerAdapter(getSupportFragmentManager(), getLifecycle(), quizCountries, submitButton);
+        pager.setOrientation( ViewPager2.ORIENTATION_HORIZONTAL );
+        pager.setAdapter( questionAdapter );
+        pager.setOffscreenPageLimit(4);
+
+
 
     }
 
+    // Helper method to check if an array contains a value
+    private static boolean contains(int[] array, int value) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == value) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 

@@ -7,15 +7,11 @@ public class Country implements Serializable {
     private String country;
     private String continent;
 
-    public Country(String key, String country, String continent) {
-        this.key = key;
+    public Country(String country, String continent) {
         this.country = country;
         this.continent = continent;
     }
 
-    public String getKey() {
-        return key;
-    }
 
     public String getCountry() {
         return country;
@@ -25,11 +21,7 @@ public class Country implements Serializable {
         return continent;
     }
 
-    public String toString(){
-        String msg = "Id = " + this.getKey() + "| Country = " + this.getCountry() + " | Cont = " + this.getContinent() ;
 
-        return msg ;
-    }
 
 }
 
