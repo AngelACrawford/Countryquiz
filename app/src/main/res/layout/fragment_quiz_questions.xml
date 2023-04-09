@@ -32,12 +32,12 @@
                 android:id="@+id/textView9"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:fontFamily="cursive"
-                android:gravity="center"
-                android:text="Select The Correct Continent for the Country! "
                 android:textColor="@color/colorAccent"
+                android:fontFamily="cursive"
+                android:textStyle="bold"
+                android:gravity="center"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:text="Select The Correct Continent for The Countries ! " />
 
 
             <LinearLayout
