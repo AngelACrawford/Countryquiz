@@ -12,6 +12,8 @@
         android:theme="@style/Theme.Countryquiz"
         tools:targetApi="31">
         <activity android:name=".QuizQuestions" />
+        <activity android:name=".ScorePage" />
+        <activity android:name=".ViewPastQuizzes" android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

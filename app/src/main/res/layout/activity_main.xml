@@ -10,7 +10,7 @@
     <Button
         android:id="@+id/newQuiz"
         android:layout_width="213dp"
-        android:layout_height="67dp"
+        android:layout_height="75dp"
         android:background="@color/colorPrimaryDark"
         android:fontFamily="cursive"
         android:text="Start a New Quiz"
@@ -26,7 +26,7 @@
     <Button
         android:id="@+id/viewPastQuizzes"
         android:layout_width="213dp"
-        android:layout_height="67dp"
+        android:layout_height="75dp"
         android:background="@color/colorPrimaryDark"
         android:fontFamily="cursive"
         android:text="View Past Quizzes"
