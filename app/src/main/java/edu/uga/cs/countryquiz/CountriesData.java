@@ -1,5 +1,6 @@
 package edu.uga.cs.countryquiz;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Resources;
@@ -8,6 +9,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -87,6 +89,7 @@ public class CountriesData extends SQLiteOpenHelper{
         return instance;
     } // getInstance()
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     public void onCreate(SQLiteDatabase db) {
         // These strings are the queries that we will use to create the schema for the Database
@@ -121,8 +124,13 @@ public class CountriesData extends SQLiteOpenHelper{
             e.printStackTrace();
         } // SQL Create Tables Queries try / catch block
 
-        readDataFromCSV(db);
-
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                readDataFromCSV(db);
+                return null;
+            }
+        }.execute();
     } // onCreate()
 
     @Override
